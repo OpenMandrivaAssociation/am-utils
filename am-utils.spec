@@ -20,8 +20,8 @@ Source2:	am-utils.conf.bz2
 Source3:	am-utils.sysconf.bz2
 Source4:	am-utils.net.map.bz2
 Requires(pre): grep
-Requires(post): rpm-helper /sbin/chkconfig /sbin/install-info
-Requires(preun): /sbin/install-info rpm-helper /sbin/chkconfig
+Requires(post): rpm-helper /sbin/chkconfig info-install
+Requires(preun): info-install rpm-helper /sbin/chkconfig
 Requires:	portmap
 BuildRoot:	%{_tmppath}/%{name}-root
 Obsoletes:	amd
