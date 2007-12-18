@@ -129,13 +129,11 @@ exit 0
 
 %post
 %_post_service amd
-/sbin/install-info %{_infodir}/am-utils.info.bz2 %{_infodir}/dir
+%_install_info %name
 
 %preun
 %_preun_service amd
-if [ $1 = 0 ]; then
-   /sbin/install-info --delete %{_infodir}/am-utils.info.bz2 %{_infodir}/dir
-fi
+%_remove_install_info %name
 
 %post -n %libname -p /sbin/ldconfig
 
