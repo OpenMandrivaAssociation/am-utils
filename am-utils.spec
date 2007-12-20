@@ -23,6 +23,7 @@ Requires(pre): grep
 Requires(post): rpm-helper chkconfig info-install
 Requires(preun): info-install rpm-helper chkconfig
 Requires:	portmap
+BuildRoot:	%{_tmppath}/%{name}-root
 Obsoletes:	amd
 Provides:	amd
 BuildRequires:	bison byacc flex gdbm-devel openldap-devel >= 2.0.0
