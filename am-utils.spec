@@ -1,6 +1,6 @@
 %define name	am-utils
 %define version	6.1.5
-%define release	%mkrel 3
+%define release	%mkrel 5
 %define epoch	2
 %define major	2
 
