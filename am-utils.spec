@@ -14,23 +14,23 @@ Release:	%{release}
 Epoch:		%{epoch}
 License:	BSD
 Group:		System/Servers
+URL:		http://www.am-utils.org/
 Source:		ftp://ftp.am-utils.org/pub/am-utils/%{name}/%{name}-%{version}.tar.bz2
 Source1:	am-utils.init.bz2
 Source2:	am-utils.conf.bz2
 Source3:	am-utils.sysconf.bz2
 Source4:	am-utils.net.map.bz2
+Patch0:		am-utils-6.0.4-nfs3.patch
+Patch1:		am-utils-6.1.5-fix-configure.patch
 Requires(pre): grep
 Requires(post): rpm-helper chkconfig info-install
 Requires(preun): info-install rpm-helper chkconfig
 Requires:	rpcbind
-BuildRoot:	%{_tmppath}/%{name}-%{version}
 Obsoletes:	amd
 Provides:	amd
 BuildRequires:	bison byacc flex gdbm-devel openldap-devel >= 2.0.0
-BuildRequires:  automake1.4
 BuildConflicts: db2-devel db1-devel
-Patch:		am-utils-6.0.4-nfs3.patch
-URL:		http://www.am-utils.org/
+BuildRoot:	%{_tmppath}/%{name}-%{version}
 
 %description
 Am-utils includes an updated version of Amd, the popular BSD
@@ -62,16 +62,12 @@ Development headers, and files for development from the am-utils package.
 
 %prep
 %setup -q
-%patch -p1
+%patch0 -p1
+%patch1 -p1
 
 %build
-
-aclocal-1.4
-automake-1.4 -a || :
-autoconf
-
 %serverbuild
-%configure \
+%configure2_5x \
 	--enable-shared				\
 	--sysconfdir=%{_sysconfdir}		\
 	--enable-libs="-lnsl -lresolv"		\
@@ -81,34 +77,34 @@ autoconf
 %make
 
 %install
-rm -rf $RPM_BUILD_ROOT
-make DESTDIR=$RPM_BUILD_ROOT install
+rm -rf %{buildroot}
+make DESTDIR=%{buildroot} install
 
-mkdir -p $RPM_BUILD_ROOT%{_sysconfdir}/{sysconfig,rc.d/init.d}
+mkdir -p %{buildroot}%{_sysconfdir}/{sysconfig,rc.d/init.d}
 
-bzcat  %{SOURCE3} > $RPM_BUILD_ROOT/amd
-install -m 755 $RPM_BUILD_ROOT/amd $RPM_BUILD_ROOT%{_sysconfdir}/sysconfig/amd
+bzcat  %{SOURCE3} > %{buildroot}/amd
+install -m 755 %{buildroot}/amd %{buildroot}%{_sysconfdir}/sysconfig/amd
 
-bzcat  %{SOURCE1} > $RPM_BUILD_ROOT/amd
-install -m 755 $RPM_BUILD_ROOT/amd $RPM_BUILD_ROOT%{_sysconfdir}/rc.d/init.d/amd
+bzcat  %{SOURCE1} > %{buildroot}/amd
+install -m 755 %{buildroot}/amd %{buildroot}%{_sysconfdir}/rc.d/init.d/amd
 
-mkdir -p $RPM_BUILD_ROOT/.automount
-rm -f $RPM_BUILD_ROOT%{_sbindir}/ctl-amd
+mkdir -p %{buildroot}/.automount
+rm -f %{buildroot}%{_sbindir}/ctl-amd
 
 # install the default config and map files
 
-bzcat %{SOURCE2} > $RPM_BUILD_ROOT/amd.conf
-install -m 600 $RPM_BUILD_ROOT/amd.conf $RPM_BUILD_ROOT%{_sysconfdir}/amd.conf
+bzcat %{SOURCE2} > %{buildroot}/amd.conf
+install -m 600 %{buildroot}/amd.conf %{buildroot}%{_sysconfdir}/amd.conf
 
-bzcat %{SOURCE4} > $RPM_BUILD_ROOT/amd
-install -m 640 $RPM_BUILD_ROOT/amd $RPM_BUILD_ROOT%{_sysconfdir}/amd.net
+bzcat %{SOURCE4} > %{buildroot}/amd
+install -m 640 %{buildroot}/amd %{buildroot}%{_sysconfdir}/amd.net
 
-rm -f $RPM_BUILD_ROOT/amd.conf
-rm -f $RPM_BUILD_ROOT/%{_sysconfdir}/*-sample
-rm -f $RPM_BUILD_ROOT/amd
+rm -f %{buildroot}/amd.conf
+rm -f %{buildroot}/%{_sysconfdir}/*-sample
+rm -f %{buildroot}/amd
 
 %clean
-rm -rf $RPM_BUILD_ROOT
+rm -rf %{buildroot}
 
 %pre
 # Check if we have an old fashioned amd.conf and rename if to amd.net
