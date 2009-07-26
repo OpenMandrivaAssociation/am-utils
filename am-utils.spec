@@ -5,7 +5,7 @@
 %define major	2
 
 %define libname %mklibname amu %major
-%define libnamedevel %mklibname amu %major -d
+%define develname %mklibname amu -d
 
 Summary:	Automount utilities including an updated version of Amd
 Name:		%{name}
@@ -46,18 +46,17 @@ mounting and unmounting filesystems.
 %package -n %libname
 Group:          System/Servers
 Summary:        Shared library files for am-utils
-Provides:	lib%name = %version-%release
 
 %description -n %libname
 Shared library files from the am-utils package.
 
-%package -n %libnamedevel
+%package -n %develname
 Group:          Development/C
 Summary:        Development files for am-utils
 Requires:       %libname = %{epoch}:%version-%release
-Provides:       libamu-devel
+Obsoletes:      %mklibname amu -d 2
 
-%description -n %libnamedevel
+%description -n %develname
 Development headers, and files for development from the am-utils package.
 
 %prep
@@ -156,7 +155,7 @@ exit 0
 %defattr(-,root,root)
 %_libdir/*.so.*
 
-%files -n %libnamedevel
+%files -n %develname
 %defattr(-,root,root)
 %_libdir/*.a
 %_libdir/*.so
