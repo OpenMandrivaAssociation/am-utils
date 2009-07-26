@@ -16,10 +16,10 @@ License:	BSD
 Group:		System/Servers
 URL:		http://www.am-utils.org/
 Source:		ftp://ftp.am-utils.org/pub/am-utils/%{name}/%{name}-%{version}.tar.bz2
-Source1:	am-utils.init.bz2
-Source2:	am-utils.conf.bz2
-Source3:	am-utils.sysconf.bz2
-Source4:	am-utils.net.map.bz2
+Source1:	am-utils.init
+Source2:	am-utils.conf
+Source3:	am-utils.sysconf
+Source4:	am-utils.net.map
 Patch0:		am-utils-6.0.4-nfs3.patch
 Patch1:		am-utils-6.1.5-fix-configure.patch
 Requires(pre): grep
@@ -82,22 +82,18 @@ make DESTDIR=%{buildroot} install
 
 mkdir -p %{buildroot}%{_sysconfdir}/{sysconfig,rc.d/init.d}
 
-bzcat  %{SOURCE3} > %{buildroot}/amd
-install -m 755 %{buildroot}/amd %{buildroot}%{_sysconfdir}/sysconfig/amd
+install -m 755 %{SOURCE3} %{buildroot}%{_sysconfdir}/sysconfig/amd
 
-bzcat  %{SOURCE1} > %{buildroot}/amd
-install -m 755 %{buildroot}/amd %{buildroot}%{_sysconfdir}/rc.d/init.d/amd
+install -m 755 %{SOURCE1} %{buildroot}%{_sysconfdir}/rc.d/init.d/amd
 
 mkdir -p %{buildroot}/.automount
 rm -f %{buildroot}%{_sbindir}/ctl-amd
 
 # install the default config and map files
 
-bzcat %{SOURCE2} > %{buildroot}/amd.conf
-install -m 600 %{buildroot}/amd.conf %{buildroot}%{_sysconfdir}/amd.conf
+install -m 600 %{SOURCE2} %{buildroot}%{_sysconfdir}/amd.conf
 
-bzcat %{SOURCE4} > %{buildroot}/amd
-install -m 640 %{buildroot}/amd %{buildroot}%{_sysconfdir}/amd.net
+install -m 640 %{SOURCE4} %{buildroot}%{_sysconfdir}/amd.net
 
 rm -f %{buildroot}/amd.conf
 rm -f %{buildroot}/%{_sysconfdir}/*-sample
