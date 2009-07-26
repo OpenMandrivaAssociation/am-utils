@@ -1,6 +1,6 @@
 %define name	am-utils
 %define version	6.1.5
-%define release	%mkrel 5
+%define release	%mkrel 6
 %define epoch	2
 %define major	2
 
@@ -22,8 +22,8 @@ Source4:	am-utils.net.map.bz2
 Requires(pre): grep
 Requires(post): rpm-helper chkconfig info-install
 Requires(preun): info-install rpm-helper chkconfig
-Requires:	portmap
-BuildRoot:	%{_tmppath}/%{name}-root
+Requires:	rpcbind
+BuildRoot:	%{_tmppath}/%{name}-%{version}
 Obsoletes:	amd
 Provides:	amd
 BuildRequires:	bison byacc flex gdbm-devel openldap-devel >= 2.0.0
