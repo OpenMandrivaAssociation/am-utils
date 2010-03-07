@@ -1,6 +1,6 @@
 %define name	am-utils
 %define version	6.1.5
-%define release	%mkrel 6
+%define release	%mkrel 7
 %define epoch	2
 %define major	2
 
@@ -21,7 +21,21 @@ Source2:	am-utils.conf
 Source3:	am-utils.sysconf
 Source4:	am-utils.net.map
 Patch0:		am-utils-6.0.4-nfs3.patch
-Patch1:		am-utils-6.1.5-fix-configure.patch
+# RH/Fedora #203193, MDV #45007 - tmpfile usage
+Patch1:		am-utils-6.1.5-rmtab-temp.patch
+# RH/Fedora #202180, MDV #45007 - amd service doesn't work
+Patch2:		am-utils-6.1.5-nfs-version.patch
+# MDV #45007, from RH: UTS_RELEASE macro has been removed from the latest kernel
+Patch3:		am-utils-6.1.5-UTS_RELEASE.patch
+# MDV #45007, Fedora build system bugfixes
+Patch4:		am-utils-6.1.5-buildsys.patch
+# RH/Fedora #435420, MDV #45007 - CVE-2008-1078 am-utils: insecure usage of
+# temporary files
+Patch5:		am-utils-6.1.5-expn-temp.patch
+# RH/Fedora #450754, MDV #45007 - Amd does not work with 2.6.25
+Patch6:		am-utils-6.1.5-nolock-toplvl.patch
+# RH/Fedora #566711 - am-utils: incorrect use of tcp_wrapper
+Patch7:		am-utils-6.1.5-libwarp.patch
 Requires(pre): grep
 Requires(post): rpm-helper chkconfig info-install
 Requires(preun): info-install rpm-helper chkconfig
@@ -63,15 +77,22 @@ Development headers, and files for development from the am-utils package.
 %setup -q
 %patch0 -p1
 %patch1 -p1
+%patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
 
 %build
 %serverbuild
+./bootstrap
 %configure2_5x \
 	--enable-shared				\
 	--sysconfdir=%{_sysconfdir}		\
 	--enable-libs="-lnsl -lresolv"		\
 	--disable-amq-mount                     \
-        --without-ldap
+	--without-ldap
 
 %make
 
@@ -160,6 +181,3 @@ exit 0
 %_libdir/*.a
 %_libdir/*.so
 %_libdir/*.la
-
-
-
