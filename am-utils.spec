@@ -1,17 +1,13 @@
-%define name	am-utils
-%define version	6.1.5
-%define release	%mkrel 8
-%define epoch	2
-%define major	2
+%define major 4
 
-%define libname %mklibname amu %major
+%define libname %mklibname amu %{major}
 %define develname %mklibname amu -d
 
 Summary:	Automount utilities including an updated version of Amd
-Name:		%{name}
-Version:	%{version}
-Release:	%{release}
-Epoch:		%{epoch}
+Name:		am-utils
+Version:	6.1.5
+Release:	9
+Epoch:		2
 License:	BSD
 Group:		System/Servers
 URL:		http://www.am-utils.org/
@@ -36,15 +32,16 @@ Patch5:		am-utils-6.1.5-expn-temp.patch
 Patch6:		am-utils-6.1.5-nolock-toplvl.patch
 # RH/Fedora #566711 - am-utils: incorrect use of tcp_wrapper
 Patch7:		am-utils-6.1.5-libwarp.patch
-Requires(pre): grep
-Requires(post): rpm-helper chkconfig info-install
-Requires(preun): info-install rpm-helper chkconfig
 Requires:	rpcbind
 Obsoletes:	amd
 Provides:	amd
-BuildRequires:	bison byacc flex gdbm-devel openldap-devel >= 2.0.0
-BuildConflicts: db2-devel db1-devel
-BuildRoot:	%{_tmppath}/%{name}-%{version}
+BuildRequires:	bison
+BuildRequires:	byacc
+BuildRequires:	flex
+BuildRequires:	gdbm-devel
+BuildRequires:	openldap-devel >= 2.0.0
+BuildConflicts:	db2-devel
+BuildConflicts:	db1-devel
 
 %description
 Am-utils includes an updated version of Amd, the popular BSD
@@ -52,25 +49,25 @@ automounter.  An automounter is a program which maintains a cache of
 mounted filesystems.  Filesystems are mounted when they are first
 referenced by the user and unmounted after a certain period of inactivity.
 Amd supports a variety of filesystems, including NFS, UFS, CD-ROMS and
-local drives.  
+local drives.
 
 You should install am-utils if you need a program for automatically
 mounting and unmounting filesystems.
 
-%package -n %libname
-Group:          System/Servers
-Summary:        Shared library files for am-utils
+%package -n %{libname}
+Group:		System/Servers
+Summary:	Shared library files for am-utils
+Obsoletes:	%mklibname amu 2
 
-%description -n %libname
+%description -n %{libname}
 Shared library files from the am-utils package.
 
-%package -n %develname
-Group:          Development/C
-Summary:        Development files for am-utils
-Requires:       %libname = %{epoch}:%version-%release
-Obsoletes:      %mklibname amu -d 2
+%package -n %{develname}
+Group:		Development/C
+Summary:	Development files for am-utils
+Requires:	%{libname} = %{EVRD}
 
-%description -n %develname
+%description -n %{develname}
 Development headers, and files for development from the am-utils package.
 
 %prep
@@ -88,17 +85,16 @@ Development headers, and files for development from the am-utils package.
 %serverbuild
 ./bootstrap
 %configure2_5x \
-	--enable-shared				\
-	--sysconfdir=%{_sysconfdir}		\
-	--enable-libs="-lnsl -lresolv"		\
-	--disable-amq-mount                     \
+	--enable-shared \
+	--sysconfdir=%{_sysconfdir} \
+	--enable-libs="-lnsl -lresolv" \
+	--disable-amq-mount \
 	--without-ldap
 
 %make
 
 %install
-rm -rf %{buildroot}
-make DESTDIR=%{buildroot} install
+%makeinstall_std
 
 mkdir -p %{buildroot}%{_sysconfdir}/{sysconfig,rc.d/init.d}
 
@@ -142,22 +138,11 @@ exit 0
 
 %post
 %_post_service amd
-%_install_info %name
 
 %preun
 %_preun_service amd
-%_remove_install_info %name
-
-%if %mdkversion < 200900
-%post -n %libname -p /sbin/ldconfig
-%endif
-
-%if %mdkversion < 200900
-%postun -n %libname -p /sbin/ldconfig
-%endif
 
 %files
-%defattr(-,root,root)
 %doc doc/*.ps AUTHORS BUGS ChangeLog NEWS README* scripts/*-sample INSTALL COPYING
 %dir /.automount
 %{_bindir}/pawd
@@ -172,12 +157,9 @@ exit 0
 %config(noreplace) %{_sysconfdir}/rc.d/init.d/amd
 %{_infodir}/*.info*
 
-%files -n %libname
-%defattr(-,root,root)
-%_libdir/*.so.*
+%files -n %{libname}
+%{_libdir}/*.so.%{major}*
 
-%files -n %develname
-%defattr(-,root,root)
-%_libdir/*.a
-%_libdir/*.so
-%_libdir/*.la
+%files -n %{develname}
+%{_libdir}/*.a
+%{_libdir}/*.so
