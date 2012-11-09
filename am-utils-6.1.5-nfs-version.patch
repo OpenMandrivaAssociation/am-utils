@@ -1,0 +1,27 @@
+--- am-utils-6.1.5/conf/mount/mount_linux.c.kzak	2006-08-24 15:59:24.000000000 +0200
++++ am-utils-6.1.5/conf/mount/mount_linux.c	2006-08-24 15:59:32.000000000 +0200
+@@ -277,7 +277,7 @@
+   int errorcode;
+ 
+   /* Fake some values for linux */
+-  mnt_data->version = NFS_MOUNT_VERSION;
++  mnt_data->version = AMD_NFS_MOUNT_VERSION;
+   if (!mnt_data->timeo) {
+ #ifdef MNT2_NFS_OPT_TCP
+     if (mnt_data->flags & MNT2_NFS_OPT_TCP)
+--- am-utils-6.1.5/conf/nfs_prot/nfs_prot_linux.h.kzak	2006-08-24 15:55:02.000000000 +0200
++++ am-utils-6.1.5/conf/nfs_prot/nfs_prot_linux.h	2006-08-24 15:58:27.000000000 +0200
+@@ -241,6 +241,13 @@
+   u_char	data[FHSIZE3];
+ };
+ 
++/* version of our nsf_mount_data struct
++ * -- we cannot use NFS_MOUNT_VERSION from system kernel 
++ *    headers, because there could version that doesn't 
++ *    match with nfs_args struct.
++ */
++#define AMD_NFS_MOUNT_VERSION	4
++
+ struct nfs_args {
+   int			version;	/* 1 */
+   int			fd;		/* 1 */

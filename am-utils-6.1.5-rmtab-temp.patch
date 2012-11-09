@@ -1,0 +1,15 @@
+diff -ur am-utils-6.1.5.orig/scripts/fixrmtab.in am-utils-6.1.5/scripts/fixrmtab.in
+--- am-utils-6.1.5.orig/scripts/fixrmtab.in	2006-08-18 16:24:53.000000000 -0400
++++ am-utils-6.1.5/scripts/fixrmtab.in	2006-08-18 16:31:12.000000000 -0400
+@@ -11,7 +11,10 @@
+ #set -x
+ 
+ RMTAB=/etc/rmtab
+-TMP=/tmp/rmtab.$$
++TMP=`mktemp /tmp/rmtab.XXXXXXXX`
++if [ x"$TMP" = "x" ] ; then
++	exit 1
++fi
+ 
+ if [ ! -f /etc/rmtab ]; then
+ 	exit 0

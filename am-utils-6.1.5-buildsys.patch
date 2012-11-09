@@ -1,0 +1,123 @@
+diff -up am-utils-6.1.new/bootstrap.kzak am-utils-6.1.new/bootstrap
+--- am-utils-6.1.new/bootstrap.kzak	2003-10-11 08:02:04.000000000 +0200
++++ am-utils-6.1.new/bootstrap	2008-05-21 12:16:36.000000000 +0200
+@@ -28,21 +28,13 @@ rm -fr autom4te.cache autom4te-*.cache
+ # generate acinclude.m4 file
+ echo "AMU: prepare acinclude.m4..."
+ test -f acinclude.m4 && mv -f acinclude.m4 acinclude.m4.old
+-(cd m4/macros
+- for i in HEADER *.m4; do
+-     cat $i
+-     echo
+-     echo
+- done
+- cat TRAILER
+-) > acinclude.m4
+ 
+ # generate aclocal.m4 file
+ echo "AMU: aclocal..."
+ test -f aclocal.m4 && mv -f aclocal.m4 aclocal.m4.old
+ # show version
+ aclocal --version 2>&1 | head -1
+-if aclocal ; then
++if aclocal -I m4/macros ; then
+     :
+ else
+     echo "aclocal command failed.  fix errors and rerun $0."
+@@ -60,7 +52,7 @@ autoconf configure.in > configure.new 2>
+ CUTWARNMSG1="warning: AC_PROG_LEX invoked multiple times|do not use m4_(patsubst|regexp):"
+ egrep -v "${CUTWARNMSG1}" ${LOG} > ${LOG}.new
+ mv ${LOG}.new ${LOG}
+-if test -s ${LOG}; then
++if false && test -s ${LOG}; then
+     echo "AUTOCONF ERRORS (MUST FIX):"
+     cat ${LOG}
+     rm -f ${LOG}
+@@ -80,7 +72,7 @@ autoheader configure.in > config.h.in 2>
+ CUTWARNMSG2="autoheader: \`config.h.in' is updated"
+ egrep -v "${CUTWARNMSG2}" ${LOG} > ${LOG}.new
+ mv ${LOG}.new ${LOG}
+-if test -s ${LOG}; then
++if false && test -s ${LOG}; then
+     echo "AUTOHEADER ERRORS (MUST FIX):"
+     cat ${LOG}
+     rm -f ${LOG}
+diff -up am-utils-6.1.new/configure.in.kzak am-utils-6.1.new/configure.in
+--- am-utils-6.1.new/configure.in.kzak	2006-05-11 19:25:47.000000000 +0200
++++ am-utils-6.1.new/configure.in	2008-05-21 20:52:48.000000000 +0200
+@@ -15,6 +15,7 @@ dnl new init style: PACKAGE, VERSION, BU
+ AC_INIT([am-utils],
+ 	sinclude([vers.m4]),
+ 	[https://bugzilla.am-utils.org/ or am-utils@am-utils.org])
++
+ AC_MSG_NOTICE(*** INITIALIZATION ***)
+ AC_CONFIG_SRCDIR([amd/amd.c])
+ AM_CONFIG_HEADER(config.h)
+@@ -1286,6 +1287,8 @@ AMU_CHECK_LIBWRAP_SEVERITY
+ fi
+ dnl ======================================================================
+ 
++AMU_HDR_TEMPLATES
++
+ dnl *********
+ AMU_SAVE_STATE
+ dnl *********
+diff -up am-utils-6.1.new/m4/macros/save_state.m4.kzak am-utils-6.1.new/m4/macros/save_state.m4
+--- am-utils-6.1.new/m4/macros/save_state.m4.kzak	2002-01-07 08:36:24.000000000 +0100
++++ am-utils-6.1.new/m4/macros/save_state.m4	2008-05-21 12:16:36.000000000 +0200
+@@ -1,12 +1,12 @@
+ dnl ######################################################################
+ dnl AC_SAVE_STATE: save confdefs.h onto dbgcf.h and write $ac_cv_* cache
+ dnl variables that are known so far.
+-define(AMU_SAVE_STATE,
+-AC_MSG_NOTICE(*** SAVING CONFIGURE STATE ***)
++AC_DEFUN([AMU_SAVE_STATE],
++[AC_MSG_NOTICE(*** SAVING CONFIGURE STATE ***)
+ if test -f confdefs.h
+ then
+  cp confdefs.h dbgcf.h
+ fi
+-[AC_CACHE_SAVE]
++AC_CACHE_SAVE]
+ )
+ dnl ======================================================================
+diff -up am-utils-6.1.new/m4/macros/cache_check_dynamic.m4.kzak am-utils-6.1.new/m4/macros/cache_check_dynamic.m4
+--- am-utils-6.1.new/m4/macros/cache_check_dynamic.m4.kzak	2002-06-21 19:12:14.000000000 +0200
++++ am-utils-6.1.new/m4/macros/cache_check_dynamic.m4	2008-05-21 12:16:36.000000000 +0200
+@@ -8,7 +8,7 @@ dnl after COMMANDS are run.
+ dnl
+ dnl ======================================================================
+ dnl AMU_CACHE_CHECK_DYNAMIC(MESSAGE, CACHE-ID, COMMANDS)
+-define(AMU_CACHE_CHECK_DYNAMIC,
++AC_DEFUN([AMU_CACHE_CHECK_DYNAMIC],
+ [
+ ac_tmp=`echo $2`
+ if eval "test \"`echo '$''{'$ac_tmp'+set}'`\" = set"; then
+diff -up am-utils-6.1.new/m4/macros/header_templates.m4.kzak am-utils-6.1.new/m4/macros/header_templates.m4
+--- am-utils-6.1.new/m4/macros/header_templates.m4.kzak	2005-10-26 05:33:12.000000000 +0200
++++ am-utils-6.1.new/m4/macros/header_templates.m4	2008-05-21 20:37:28.000000000 +0200
+@@ -1,5 +1,7 @@
+ dnl FILE: m4/macros/header_templates.m4
+ dnl defines descriptions for various am-utils specific macros
++AC_DEFUN([AMU_HDR_TEMPLATES],
++[
+ 
+ AH_TEMPLATE([HAVE_AMU_FS_AUTO],
+ [Define if have automount filesystem])
+@@ -997,3 +999,5 @@ AH_TEMPLATE([NEED_LIBWRAP_SEVERITY_VARIA
+ 
+ AH_TEMPLATE([HAVE_EXTERN_LDAP_ENABLE_CACHE],
+ [does extern definition for ldap_enable_cache() exist?])
++
++])
+diff -up am-utils-6.1.new/m4/macros/mount_headers.m4.kzak am-utils-6.1.new/m4/macros/mount_headers.m4
+--- am-utils-6.1.new/m4/macros/mount_headers.m4.kzak	2002-01-07 08:36:23.000000000 +0100
++++ am-utils-6.1.new/m4/macros/mount_headers.m4	2008-05-21 12:16:36.000000000 +0200
+@@ -1,6 +1,6 @@
+ dnl ######################################################################
+ dnl an M4 macro to include a list of common headers being used everywhere
+-define(AMU_MOUNT_HEADERS,
++AC_DEFUN([AMU_MOUNT_HEADERS],
+ [
+ #include "${srcdir}/include/mount_headers1.h"
+ #include AMU_NFS_PROTOCOL_HEADER

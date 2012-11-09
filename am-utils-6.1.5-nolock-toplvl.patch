@@ -1,0 +1,29 @@
+
+amd does not work with kernel 2.6.25
+
+Just after start-up, one can find the following in /var/log/messages:
+
+Jun 10 11:36:28 tantale amd[18589]: '/net': mount: No locks available
+Jun 10 11:36:29 tantale kernel: Invalid hostname "pid18588@tantale:/net" in NFS lock request
+
+For more details see:
+ http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=479884
+
+From: Philippe Troin <phil@fifi.org>
+Addresses-Red-Hat-Bug: #450754
+
+diff -up am-utils-6.1.5/amd/amfs_toplvl.c.kzak am-utils-6.1.5/amd/amfs_toplvl.c
+--- am-utils-6.1.5/amd/amfs_toplvl.c.kzak	2008-12-02 13:45:08.000000000 +0100
++++ am-utils-6.1.5/amd/amfs_toplvl.c	2008-12-02 13:37:21.000000000 +0100
+@@ -226,7 +226,10 @@ amfs_toplvl_mount(am_node *mp, mntfs *mf
+ 		MNTTAB_OPT_RETRANS, gopt.amfs_auto_retrans[AMU_TYPE_TOPLVL]);
+       xstrlcat(opts, toplvl_opts, sizeof(opts));
+     }
+-
++#ifdef MNTTAB_OPT_NOLOCK
++    xstrlcat(opts, ",", sizeof(opts));
++    xstrlcat(opts, MNTTAB_OPT_NOLOCK, sizeof(opts));
++#endif /* MNTTAB_OPT_NOLOCK */
+ #ifdef MNTTAB_OPT_NOAC
+     if (gopt.auto_attrcache == 0) {
+       xstrlcat(opts, ",", sizeof(opts));
