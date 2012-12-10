@@ -1,0 +1,105 @@
+#!/bin/bash
+#
+# Version: 1.3mdk
+#
+# chkconfig: 2345 72 28
+# description: Runs the automount daemon that mounts devices and NFS hosts \
+#	       on demand.
+# processname: amd
+# config: /etc/amd.conf
+### BEGIN INIT INFO
+# Provides: amd
+# Required-Start: $local_fs
+# Required-Stop: $local_fs
+# Short-Description: start and stop early amd
+# Description: Start and stop amd automounter
+### END INIT INFO
+
+# we require the /etc/amd.conf file
+[ -f /etc/amd.conf ] || exit 0
+[ -f /etc/sysconfig/amd ] || exit 0
+
+# Source function library.
+. /etc/init.d/functions
+
+# Recover AMDOPTS from /etc/sysconfig/amd.
+if [ -f /etc/sysconfig/amd ] ; then
+	. /etc/sysconfig/amd
+fi
+
+RETVAL=0
+prog=amd
+amd=/usr/sbin/amd
+
+start() {
+	echo -n $"Starting $prog: "
+	daemon $amd -F /etc/amd.conf $AMDOPTS $OPTIONS $MOUNTPTS
+	RETVAL=$?
+	echo
+	[ $RETVAL = 0 ] && touch /var/lock/subsys/amd
+	return $RETVAL
+}
+
+stop() {
+	echo -n $"Stopping $prog: "
+	delay=5
+	count=10
+	i=1
+	is_down="nope"
+	while [ $i != $count ]; do
+	    # run amq
+	    /usr/sbin/amq > /dev/null 2>&1
+	    if [ $? = 0 ] ; then
+                # amd is up
+                /usr/sbin/amq | awk '{print $1}' | xargs -n 1 /usr/sbin/amq -uf
+            else
+		# amd is down
+		is_down=""
+		break
+	    fi
+	    /usr/sbin/amq > /dev/null 2>&1
+            if [ $? != 0 ] ; then
+	        sleep $delay
+            fi
+	    i=`expr $i + 1`
+	done
+	if [ -n "$is_down" ] ; then
+	    killproc $amd
+	    RETVAL=$?
+	fi
+	[ $RETVAL = 0 ] && rm -f /var/lock/subsys/amd
+	echo
+	return $RETVAL
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        start
+	;;
+  stop)
+        stop
+	;;
+  status)
+	status $amd
+	;;
+  restart)
+	stop
+	start
+	;;
+  condrestart)
+        if [ -f /var/lock/subsys/amd ]; then
+	    stop
+	    start
+	fi
+	;;
+  reload)
+	action $"Reloading $prog:" killall -HUP $amd
+	;;
+  *)
+ 	echo $"Usage: $0 {start|stop|restart|reload|condrestart|status}"
+	exit 1
+esac
+
+exit 0
+

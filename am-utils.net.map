@@ -1,0 +1,2 @@
+/defaults fs:=${autodir}/${rhost}/root/${rfs};opts:=nosuid,nodev,rsize=8192,wsize=8192
+*       rhost:=${key};type:=host;rfs:=/

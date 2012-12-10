@@ -1,6 +1,2 @@
 sources:
-  "am-utils-6.1.5.tar.bz2:"	c809aa27c3040a3e65f8ec318a19f8a68ce82d5b
-  "am-utils.conf:"	a5959783ec3375b412396e0bfdd9e754164e20fa
-  "am-utils.init:"	ad3505e0a853971c97a157bb1cc50317c143d621
-  "am-utils.net.map:"	b9d05b160a15ec4dd3344a7c821ad678a20289f9
-  "am-utils.sysconf:"	cf5e20e5d0e7a355c530c13b14e0fa736557d055
+  "am-utils-6.1.5.tar.bz2": c809aa27c3040a3e65f8ec318a19f8a68ce82d5b
