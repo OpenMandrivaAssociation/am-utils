@@ -6,7 +6,7 @@
 Summary:	Automount utilities including an updated version of Amd
 Name:		am-utils
 Version:	6.1.5
-Release:	10
+Release:	11
 Epoch:		2
 License:	BSD
 Group:		System/Servers
