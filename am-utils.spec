@@ -10,7 +10,7 @@ Release:	11
 Epoch:		2
 License:	BSD
 Group:		System/Servers
-Url:		http://www.am-utils.org/
+Url:		https://www.am-utils.org/
 Source0:	ftp://ftp.am-utils.org/pub/am-utils/%{name}/%{name}-%{version}.tar.bz2
 Source1:	am-utils.init
 Source2:	am-utils.conf
