@@ -34,6 +34,11 @@ Patch6:		am-utils-6.1.5-nolock-toplvl.patch
 Patch7:		am-utils-6.1.5-libwarp.patch
 Patch8:		am-utils-6.1.5-fix-configure.patch
 Requires:	rpcbind
+BuildRequires:	autoconf
+BuildRequires:	automake
+BuildRequires:	libtool-base
+BuildRequires:	slibtool
+BuildRequires:	make
 BuildRequires:	bison
 BuildRequires:	byacc
 BuildRequires:	flex
